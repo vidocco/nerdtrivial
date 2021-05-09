@@ -1,0 +1,39 @@
+{
+  "name": "nerdtrivial",
+  "version": "1.0.0",
+  "description": "Trivia for nerds and geeks",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "start:dev": "nodemon index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vidocco/nerdtrivial.git"
+  },
+  "keywords": [
+    "trivia",
+    "nerd",
+    "geek",
+    "trivial"
+  ],
+  "author": "Jack Thibaut",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/vidocco/nerdtrivial/issues"
+  },
+  "homepage": "https://github.com/vidocco/nerdtrivial#readme",
+  "dependencies": {
+    "@koa/cors": "^3.1.0",
+    "@koa/router": "^10.0.0",
+    "dotenv": "^9.0.1",
+    "koa": "^2.13.1",
+    "koa-bodyparser": "^4.3.0",
+    "koa-static": "^5.0.0",
+    "mongoose": "^5.12.7"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.7"
+  }
+}
