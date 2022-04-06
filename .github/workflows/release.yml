@@ -28,12 +28,14 @@ jobs:
 
           PRS=$(git log origin/$BRANCH..origin/$TARGET_BRANCH --no-walk --tags --pretty=format:"%d%n" | grep -o "PR#[0-9]\+" | grep -o "[0-9]\+")
 
-          GITHUB_LINKS=""
+          GITHUB_LINKS="<ul>"
 
           for pr_number in $PRS
           do
-            GITHUB_LINKS="$GITHUB_LINKS- https://github.com/vidocco/nerdtrivial/pull/$pr_number\n"
+            GITHUB_LINKS="$GITHUB_LINKS<li>https://github.com/vidocco/nerdtrivial/pull/$pr_number</li>"
           done
+
+          GITHUB_LINKS="$GITHUB_LINKS</ul>"
 
           echo "LINKS=$GITHUB_LINKS" >> "$GITHUB_ENV"
           echo "TARGET_BRANCH=$TARGET_BRANCH" >> "$GITHUB_ENV"
