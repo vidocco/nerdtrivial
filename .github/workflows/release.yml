@@ -32,10 +32,10 @@ jobs:
 
           for pr_number in $PRS
           do
-            GITHUB_LINKS="$GITHUB_LINKS<li>https://github.com/vidocco/nerdtrivial/pull/$pr_number</li>"
+            GITHUB_LINKS="$GITHUB_LINKS<li>vidocco/nerdtrivial/pull/$pr_number</li>"
           done
 
-          GITHUB_LINKS="$GITHUB_LINKS</ul>"
+          GITHUB_LINKS="$GITHUB_LINKS</ul><br/>"
 
           echo "LINKS=$GITHUB_LINKS" >> "$GITHUB_ENV"
           echo "TARGET_BRANCH=$TARGET_BRANCH" >> "$GITHUB_ENV"
@@ -46,8 +46,8 @@ jobs:
           destination_branch: "${{ env.TARGET_BRANCH }}"
           pr_title: "${{ env.TITLE }} Release - ${{env.DATE}}"
           pr_body: |
-            ## Changelist<br/>
+            ## Changelist
             ${{ env.LINKS }}
-            ## Checklist<br/>
+            ## Checklist
             - [ ] All backup tasks have been performed
             - [ ] I've assigned as reviewers all devs that have their changes included in this PR
