@@ -1,0 +1,52 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    branches:
+      - 'staging'
+
+jobs:
+  # This workflow contains a single job called "greet"
+  create-release-pr:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set Variables
+        run: |
+          echo "DATE=$(date +'%Y/%m/%d')" >> "$GITHUB_ENV"
+          TARGET_BRANCH=""
+          TITLE=""
+
+          BRANCH=$(echo $GITHUB_REF | cut -d'/' -f 3)
+          if [[ $BRANCH == "staging" ]]; then
+            TARGET_BRANCH=main
+            TITLE=Production
+          else
+            print "Unexpected source branch for release"
+            exit 0
+          fi
+
+          PRS=$(git --no-pager log $BRANCH..$TARGET_BRANCH --no-walk --tags --pretty=format:"%d%n" | grep -o "v[0-9]\+" | grep -o "[0-9]\+")
+
+          GITHUB_LINKS=""
+
+          for pr_number in $PRS
+          do
+            GITHUB_LINKS="$GITHUB_LINKS- https://github.com/vidocco/nerdtrivial/pull/$pr_number\n"
+          done
+
+          echo "LINKS=$GITHUB_LINKS" >> "$GITHUB_ENV"
+          echo "TARGET_BRANCH=$TARGET_BRANCH" >> "$GITHUB_ENV"
+          echo "TITLE=$TITLE" >> "$GITHUB_ENV"
+      - uses: repo-sync/pull-request@v2
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          destination_branch: "${{ env.TARGET_BRANCH }}"
+          pr_title: "${{ env.TITLE }} Release - ${{env.DATE}}"
+          pr_body:
+            "## Changelist<br/>\
+            \${{ env.LINKS }}\
+            \## Checklist<br/>\
+            \- [ ] All backup tasks have been performed\
+            \- [ ] I've assigned as reviewers all devs that have their changes included in this PR"
