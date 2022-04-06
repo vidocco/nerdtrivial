@@ -26,7 +26,7 @@ jobs:
             exit 0
           fi
 
-          PRS=$(git log origin/$BRANCH..origin/$TARGET_BRANCH --no-walk --tags --pretty=format:"%d%n" | grep -o "v[0-9]\+" | grep -o "[0-9]\+")
+          PRS=$(git log origin/$BRANCH..origin/$TARGET_BRANCH --no-walk --tags --pretty=format:"%d%n" | grep -o "PR#[0-9]\+" | grep -o "[0-9]\+")
 
           GITHUB_LINKS=""
 
@@ -45,7 +45,7 @@ jobs:
           pr_title: "${{ env.TITLE }} Release - ${{env.DATE}}"
           pr_body: |
             ## Changelist<br/>
-            ${{ env.LINKS }}\
+            ${{ env.LINKS }}
             ## Checklist<br/>
-            - [ ] All backup tasks have been performed\
+            - [ ] All backup tasks have been performed
             - [ ] I've assigned as reviewers all devs that have their changes included in this PR
