@@ -42,3 +42,7 @@ connection.once('open', async () => {
 
   mongoose.connection.close()
 })
+
+
+curl -X POST http://localhost:3000/question -d '{ "author" : "a", "category": "60980e496d2ca90917127b47", "answer": "c", "question": "d", "theme": "60980e61465d1f0b140a2612" }' -H "Content-Type: application/json" -D /dev/stdout
+curl -X POST http://localhost:3000/question -d '{ "author" : "a", "category": "60980e496d2ca90917127a47", "answer": "c", "question": "f", "theme": "60980e61465d1f0b140a2612" }' -H "Content-Type: application/json" -D /dev/stdout
