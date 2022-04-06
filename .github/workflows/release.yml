@@ -48,6 +48,7 @@ jobs:
           pr_body: |
             ## Changelist <br/>
             ${{ env.LINKS }}
+
             ## Checklist <br/>
-            - [ ] All backup tasks have been performed
-            - [ ] I've assigned as reviewers all devs that have their changes included in this PR
+            - [ ] All backup tasks have been performed <br/>
+            - [ ] I've assigned as reviewers all devs that have their changes included in this PR.
