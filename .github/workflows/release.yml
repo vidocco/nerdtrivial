@@ -26,7 +26,7 @@ jobs:
             exit 0
           fi
 
-          PRS=$(git --no-pager log $BRANCH..$TARGET_BRANCH --no-walk --tags --pretty=format:"%d%n" | grep -o "v[0-9]\+" | grep -o "[0-9]\+")
+          PRS=$(git log $BRANCH..$TARGET_BRANCH --no-walk --tags --pretty=format:"%d%n" | grep -o "v[0-9]\+" | grep -o "[0-9]\+")
 
           GITHUB_LINKS=""
 
