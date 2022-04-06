@@ -1,9 +1,6 @@
 name: Create Release PR
 
-on:
-  workflow_dispatch:
-    origin_branch:
-      - 'staging'
+on: workflow_dispatch
 
 jobs:
   # This workflow contains a single job called "greet"
