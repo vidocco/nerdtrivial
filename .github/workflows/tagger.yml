@@ -21,4 +21,5 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           custom_tag: ${{ github.event.pull_request.number }}
+          tag_prefix: "PR#"
       - run: echo ${{ steps.tag_pr.outputs.new_tag }}
