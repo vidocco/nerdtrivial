@@ -35,7 +35,7 @@ jobs:
             GITHUB_LINKS="$GITHUB_LINKS<li>vidocco/nerdtrivial/pull/$pr_number</li>"
           done
 
-          GITHUB_LINKS="$GITHUB_LINKS</ul><br/>"
+          GITHUB_LINKS="$GITHUB_LINKS</ul>"
 
           echo "LINKS=$GITHUB_LINKS" >> "$GITHUB_ENV"
           echo "TARGET_BRANCH=$TARGET_BRANCH" >> "$GITHUB_ENV"
