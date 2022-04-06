@@ -44,8 +44,8 @@ jobs:
           destination_branch: "${{ env.TARGET_BRANCH }}"
           pr_title: "${{ env.TITLE }} Release - ${{env.DATE}}"
           pr_body: |
-            "## Changelist<br/>\
-            \${{ env.LINKS }}\
-            \## Checklist<br/>\
-            \- [ ] All backup tasks have been performed\
-            \- [ ] I've assigned as reviewers all devs that have their changes included in this PR"
+            ## Changelist<br/>
+            ${{ env.LINKS }}\
+            ## Checklist<br/>
+            - [ ] All backup tasks have been performed\
+            - [ ] I've assigned as reviewers all devs that have their changes included in this PR
