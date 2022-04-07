@@ -29,22 +29,28 @@ jobs:
           PRS=$(git tag -l --no-merged origin/$TARGET_BRANCH | grep -o "[0-9]\+")
 
           GITHUB_LINKS="<ul>"
+          AUTHORS=""
 
           for pr_number in $PRS
           do
             GITHUB_LINKS="$GITHUB_LINKS<li>vidocco/nerdtrivial/pull/$pr_number</li>"
+            owner=$(curl https://api.github.com/repos/vidocco/nerdtrivial/pulls/$PR -H 'Content-Type: application/json' - H 'Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' | jq '.user.login')
+            AUTHORS="$AUTHORS$owner\n"
           done
 
           GITHUB_LINKS="$GITHUB_LINKS</ul>"
+          AUTHORS=$($AUTHORS | sort --unique | sed -z "s/\n/,/g")
 
           echo "LINKS=$GITHUB_LINKS" >> "$GITHUB_ENV"
           echo "TARGET_BRANCH=$TARGET_BRANCH" >> "$GITHUB_ENV"
           echo "TITLE=$TITLE" >> "$GITHUB_ENV"
+          echo "AUTHORS=$AUTHORS" >> "$GITHUB_ENV"
       - uses: repo-sync/pull-request@v2
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           destination_branch: "${{ env.TARGET_BRANCH }}"
           pr_title: "${{ env.TITLE }} Release - ${{env.DATE}}"
+          pr_reviewer: "${{ env.AUTHORS }}"
           pr_body: |
             ## Changelist <br/>
             ${{ env.LINKS }}
