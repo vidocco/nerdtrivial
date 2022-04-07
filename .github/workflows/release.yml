@@ -74,7 +74,7 @@ jobs:
             owner=$(echo $res | jq --raw-output '.user.login')
             pr_title=$(echo $res | jq --raw-output '.title')
 
-            AUTHORS="$AUTHORS$owner$\n"
+            AUTHORS="$AUTHORS$owner\n"
             SLACK_MESSAGE="$SLACK_MESSAGE,$(gen_section $pr_title $owner $url)"
             GITHUB_LINKS="$GITHUB_LINKS<li>vidocco/nerdtrivial/pull/$pr_number</li>"
           done
@@ -106,4 +106,4 @@ jobs:
         env:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
         with:
-          args: "{ \"channel\": \"C9ZH84S3S\", ${{env.SLACK_MESSAGE}} }"
+          args: '{ \"channel\": \"C9ZH84S3S\", ${{env.SLACK_MESSAGE}} }'
