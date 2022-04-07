@@ -31,38 +31,38 @@ jobs:
           GITHUB_LINKS="<ul>"
           AUTHORS=""
           SLACK_MESSAGE="\
-            \"blocks\": [\
+            \\\"blocks\\\": [\
               {\
-                \"type\": \"section\",\
-                \"text\": {\
-                  \"type\": \"mrkdwn\",\
-                  \"text\": \":rocket: A new *$TITLE release* has been created :rocket:\"\
+                \\\"type\\\": \\\"section\\\",\
+                \\\"text\\\": {\
+                  \\\"type\\\": \\\"mrkdwn\\\",\
+                  \\\"text\\\": \\\":rocket: A new *$TITLE release* has been created :rocket:\\\"\
                 }\
               },\
               {\
-                \"type\": \"header\",\
-                \"text\": {\
-                  \"type\": \"plain_text\",\
-                  \"text\": \"Changelist\"\
+                \\\"type\\\": \\\"header\\\",\
+                \\\"text\\\": {\
+                  \\\"type\\\": \\\"plain_text\\\",\
+                  \\\"text\\\": \\\"Changelist\\\"\
                 }\
               }"
 
           gen_section() {
             echo "\
-              { \"type\": \"divider\" },\
+              { \\\"type\\\": \\\"divider\\\" },\
               {\
-                \"type\": \"section\",\
-                \"text\": {\
-                  \"type\": \"mrkdwn\",\
-                  \"text\": \"*$1*\n*Author:* $2\"\
+                \\\"type\\\": \\\"section\\\",\
+                \\\"text\\\": {\
+                  \\\"type\\\": \\\"mrkdwn\\\",\
+                  \\\"text\": \\\"*$1*\n*Author:* $2\\\"\
                 },\
-                \"accessory\": {\
-                  \"type\": \"button\",\
-                  \"text\": {\
-                    \"type\": \"plain_text\",\
-                    \"text\": \"See Change Details\"\
+                \\\"accessory\\\": {\
+                  \\\"type\\\": \\\"button\\\",\
+                  \\\"text\\\": {\
+                    \\\"type\\\": \\\"plain_text\\\",\
+                    \\\"text\\\": \\\"See Change Details\\\"\
                   },\
-                  \"url\": \"3$\"\
+                  \\\"url\\\": \\\"3$\\\"\
                 }\
               }"
           }
@@ -106,4 +106,4 @@ jobs:
         env:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
         with:
-          args: '{ "channel": "C9ZH84S3S", ${{env.SLACK_MESSAGE}} }'
+          args: '{ \"channel\": \"C9ZH84S3S\", ${{env.SLACK_MESSAGE}} }'
