@@ -62,7 +62,7 @@ jobs:
                     \\\"type\\\": \\\"plain_text\\\",\
                     \\\"text\\\": \\\"See Change Details\\\"\
                   },\
-                  \\\"url\\\": \\\"3$\\\"\
+                  \\\"url\\\": \\\"$3\\\"\
                 }\
               }"
           }
@@ -75,7 +75,7 @@ jobs:
             pr_title=$(echo $res | jq --raw-output '.title')
 
             AUTHORS="$AUTHORS$owner\n"
-            SLACK_MESSAGE="$SLACK_MESSAGE,$(gen_section $pr_title $owner $url)"
+            SLACK_MESSAGE="$SLACK_MESSAGE,$(gen_section "$pr_title" "$owner" "$url")"
             GITHUB_LINKS="$GITHUB_LINKS<li>vidocco/nerdtrivial/pull/$pr_number</li>"
           done
 
