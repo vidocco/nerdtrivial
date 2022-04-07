@@ -106,4 +106,4 @@ jobs:
         env:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
         with:
-          args: '{ \"channel\": \"C9ZH84S3S\", ${{env.SLACK_MESSAGE}} }'
+          args: '{ "channel": "C9ZH84S3S", ${{env.SLACK_MESSAGE}} }'
