@@ -102,7 +102,7 @@ jobs:
             ## Checklist <br/>
             - [ ] All backup tasks have been performed.
       - name: Notify support-general
-        if: env.TARGET_BRANCH == "production"
+        if: ${{ env.TARGET_BRANCH == 'main' }}
         env:
           SLACK_BOT_TOKEN: ${{secrets.SLACK_BOT_TOKEN}}
         run: |
