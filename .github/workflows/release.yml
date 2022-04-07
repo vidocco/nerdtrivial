@@ -101,7 +101,7 @@ jobs:
             ## Checklist <br/>
             - [ ] All backup tasks have been performed.
       - name: Notify support-general
-        if: ${{ env.TARGET_BRANCH == "main" }}
+        if: ${{ env.TARGET_BRANCH == 'main' }}
         uses: pullreminders/slack-action@master
         env:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
