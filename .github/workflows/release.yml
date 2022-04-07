@@ -34,7 +34,7 @@ jobs:
           for pr_number in $PRS
           do
             GITHUB_LINKS="$GITHUB_LINKS<li>vidocco/nerdtrivial/pull/$pr_number</li>"
-            owner=$(curl https://api.github.com/repos/vidocco/nerdtrivial/pulls/$pr_number -H 'Content-Type: application/json' -H 'Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' | jq '.user.login')
+            owner=$(curl https://api.github.com/repos/vidocco/nerdtrivial/pulls/$pr_number -H 'Content-Type: application/json' -H 'Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' | jq --raw-output '.user.login')
             AUTHORS="$AUTHORS$owner\n"
           done
 
