@@ -31,38 +31,38 @@ jobs:
           GITHUB_LINKS="<ul>"
           AUTHORS=""
           SLACK_MESSAGE="\
-            \\\"blocks\\\": [\
+            \"blocks\": [\
               {\
-                \\\"type\\\": \\\"section\\\",\
-                \\\"text\\\": {\
-                  \\\"type\\\": \\\"mrkdwn\\\",\
-                  \\\"text\\\": \\\":rocket: A new *$TITLE release* has been created :rocket:\\\"\
+                \"type\": \"section\",\
+                \"text\": {\
+                  \"type\": \"mrkdwn\",\
+                  \"text\": \":rocket: A new *$TITLE release* has been created :rocket:\"\
                 }\
               },\
               {\
-                \\\"type\\\": \\\"header\\\",\
-                \\\"text\\\": {\
-                  \\\"type\\\": \\\"plain_text\\\",\
-                  \\\"text\\\": \\\"Changelist\\\"\
+                \"type\": \"header\",\
+                \"text\": {\
+                  \"type\": \"plain_text\",\
+                  \"text\": \"Changelist\"\
                 }\
               }"
 
           gen_section() {
             echo "\
-              { \\\"type\\\": \\\"divider\\\" },\
+              { \"type\": \"divider\" },\
               {\
-                \\\"type\\\": \\\"section\\\",\
-                \\\"text\\\": {\
-                  \\\"type\\\": \\\"mrkdwn\\\",\
-                  \\\"text\": \\\"*$1*\n*Author:* $2\\\"\
+                \"type\": \"section\",\
+                \"text\": {\
+                  \"type\": \"mrkdwn\",\
+                  \"text\": \"*$1*\n*Author:* $2\"\
                 },\
-                \\\"accessory\\\": {\
-                  \\\"type\\\": \\\"button\\\",\
-                  \\\"text\\\": {\
-                    \\\"type\\\": \\\"plain_text\\\",\
-                    \\\"text\\\": \\\"See Change Details\\\"\
+                \"accessory\": {\
+                  \"type\": \"button\",\
+                  \"text\": {\
+                    \"type\": \"plain_text\",\
+                    \"text\": \"See Change Details\"\
                   },\
-                  \\\"url\\\": \\\"$3\\\"\
+                  \"url\": \"$3\"\
                 }\
               }"
           }
@@ -70,12 +70,13 @@ jobs:
           for pr_number in $PRS
           do
             url=https://api.github.com/repos/vidocco/nerdtrivial/pulls/$pr_number
+            link_url=https://github.com/vidocco/nerdtrivial/pull/$pr_number
             res=$(curl $url -H 'Content-Type: application/json' -H 'Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}')
             owner=$(echo $res | jq --raw-output '.user.login')
             pr_title=$(echo $res | jq --raw-output '.title')
 
             AUTHORS="$AUTHORS$owner\n"
-            SLACK_MESSAGE="$SLACK_MESSAGE,$(gen_section "$pr_title" "$owner" "$url")"
+            SLACK_MESSAGE="$SLACK_MESSAGE,$(gen_section "$pr_title" "$owner" "$link_url")"
             GITHUB_LINKS="$GITHUB_LINKS<li>vidocco/nerdtrivial/pull/$pr_number</li>"
           done
 
@@ -106,4 +107,4 @@ jobs:
         env:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
         with:
-          args: '{ \"channel\": \"C9ZH84S3S\", ${{env.SLACK_MESSAGE}} }'
+          args: '\"{ \"channel\": \"C9ZH84S3S\", ${{env.SLACK_MESSAGE}} }\"'
