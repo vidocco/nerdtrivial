@@ -102,10 +102,11 @@ jobs:
             ## Checklist <br/>
             - [ ] All backup tasks have been performed.
       - name: Notify support-general
-        if: ${{ env.TARGET_BRANCH == 'main' }}
-        uses: pullreminders/slack-action@master
+        if: env.TARGET_BRANCH == "production"
         env:
-          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
-        with:
-          args: |
-            { "channel": "C9ZH84S3S", ${{env.SLACK_MESSAGE}} }
+          SLACK_BOT_TOKEN: ${{secrets.SLACK_BOT_TOKEN}}
+        run: |
+          curl -X POST https://slack.com/api/chat.postMessage \
+            -H "Content-type: application/json; charset=utf-8"
+            -H "Authorization: Bearer ${{env.SLACK_BOT_TOKEN}}"
+            -d '{ "channel": "C9ZH84S3S", ${{env.SLACK_MESSAGE}} }'
