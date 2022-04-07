@@ -39,7 +39,7 @@ jobs:
           done
 
           GITHUB_LINKS="$GITHUB_LINKS</ul>"
-          AUTHORS=$("$AUTHORS" | sort --unique | sed -z "s/\n/,/g")
+          AUTHORS=$(echo $AUTHORS | sort --unique | sed -z "s/\n/,/g")
 
           echo "LINKS=$GITHUB_LINKS" >> "$GITHUB_ENV"
           echo "TARGET_BRANCH=$TARGET_BRANCH" >> "$GITHUB_ENV"
