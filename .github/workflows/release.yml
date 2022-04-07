@@ -107,6 +107,6 @@ jobs:
           SLACK_BOT_TOKEN: ${{secrets.SLACK_BOT_TOKEN}}
         run: |
           curl -X POST https://slack.com/api/chat.postMessage \
-            -H "Content-type: application/json; charset=utf-8"
-            -H "Authorization: Bearer $SLACK_BOT_TOKEN"
+            -H "Content-type: application/json; charset=utf-8" \
+            -H "Authorization: Bearer $SLACK_BOT_TOKEN" \
             -d '{ "channel": "C9ZH84S3S", ${{env.SLACK_MESSAGE}} }'
