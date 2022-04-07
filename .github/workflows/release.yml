@@ -64,7 +64,7 @@ jobs:
                   \},\
                   \\"url\": \"3$\"\
                 \}\
-              \}\"
+              \}"
           }
 
           for pr_number in $PRS
