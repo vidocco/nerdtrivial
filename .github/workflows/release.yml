@@ -26,7 +26,7 @@ jobs:
             exit 0
           fi
 
-          PRS=$(git log origin/$BRANCH..origin/$TARGET_BRANCH --no-walk --tags --pretty=format:"%d%n" | grep -o "PR#[0-9]\+" | grep -o "[0-9]\+")
+          PRS=$(git tag -l --no-merged origin/$TARGET_BRANCH | grep -o "[0-9]\+")
 
           GITHUB_LINKS="<ul>"
 
