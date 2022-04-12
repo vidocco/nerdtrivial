@@ -122,8 +122,8 @@ jobs:
                     "type": "context",\
                     "elements": [\
                         {\
-                            "type": "mrkdwn",\
-                            "text": ":rocket: and *$(($CHANGE_COUNT-10))* other changes \(see PR for full details\)."\
+                            \"type\": \"mrkdwn\",\
+                            \"text\": \":rocket: and *$(($CHANGE_COUNT-10))* other changes \(see PR for full details\).\"\
                         }\
                     ]\
                 }\
