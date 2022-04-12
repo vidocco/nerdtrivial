@@ -50,7 +50,7 @@ jobs:
             pr_title=$(echo $res | jq --raw-output '.title')
 
             AUTHORS="$AUTHORS$owner\n"
-            SLACK_MESSAGE="$SLACK_MESSAGE$(gen_section "$pr_title" "$owner" "$link_url")"
+            SLACK_MESSAGE="$SLACK_MESSAGE$(if [[ $CHANGE_COUNT -ge 10 ]];then echo gen_section "$pr_title" "$owner" "$link_url";fi)"
             GITHUB_LINKS="$GITHUB_LINKS<li>vidocco/nerdtrivial/pull/$pr_number</li>"
             CHANGE_COUNT=$(($CHANGE_COUNT+1))
           done
@@ -127,7 +127,7 @@ jobs:
                         }\
                     ]\
                 }\
-              ]}"
+              ]"
           fi
 
           FULL_SLACK_MESSAGE="$SLACK_MESSAGE_START$SLACK_MESSAGE$SLACK_MESSAGE_END"
