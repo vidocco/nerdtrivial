@@ -119,8 +119,8 @@ jobs:
             SLACK_MESSAGE_END="]\
                 },\
                 {\
-                    "type": "context",\
-                    "elements": [\
+                    \"type\": \"context\",\
+                    \"elements\": [\
                         {\
                             \"type\": \"mrkdwn\",\
                             \"text\": \":rocket: and *$(($CHANGE_COUNT-10))* other changes \(see PR for full details\).\"\
