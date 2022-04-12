@@ -82,7 +82,7 @@ jobs:
         env:
           SLACK_MESSAGE: ${{env.SLACK_MESSAGE}}
           CHANGE_COUNT: ${{env.CHANGE_COUNT}}
-          PR_URL: ${{steps.open-release-pr.output.pr_url}}
+          PR_URL: ${{steps.open-release-pr.outputs.pr_url}}
         run: |
           SLACK_MESSAGE_START="\
             \"blocks\": [\
