@@ -30,42 +30,16 @@ jobs:
 
           GITHUB_LINKS="<ul>"
           AUTHORS=""
-          SLACK_MESSAGE="\
-            \"blocks\": [\
-              {\
-                \"type\": \"section\",\
-                \"text\": {\
-                  \"type\": \"mrkdwn\",\
-                  \"text\": \":rocket: A new *$TITLE release* has been created :rocket:\"\
-                }\
-              },\
-              {\
-                \"type\": \"header\",\
-                \"text\": {\
-                  \"type\": \"plain_text\",\
-                  \"text\": \"Changelist\"\
-                }\
-              }"
+          SLACK_MESSAGE=""
 
           gen_section() {
-            echo "\
-              { \"type\": \"divider\" },\
-              {\
-                \"type\": \"section\",\
-                \"text\": {\
-                  \"type\": \"mrkdwn\",\
-                  \"text\": \"*$1*\n*Author:* $2\"\
-                },\
-                \"accessory\": {\
-                  \"type\": \"button\",\
-                  \"text\": {\
-                    \"type\": \"plain_text\",\
-                    \"text\": \"See Change Details\"\
-                  },\
-                  \"url\": \"$3\"\
-                }\
-              }"
+            echo "{\
+              \"type\": \"mrkdwn\",\
+              \"text\": \"<$3| *$1*>\n *Author*: $2\"\
+            },"
           }
+
+          CHANGE_COUNT=0
 
           for pr_number in $PRS
           do
@@ -76,20 +50,23 @@ jobs:
             pr_title=$(echo $res | jq --raw-output '.title')
 
             AUTHORS="$AUTHORS$owner\n"
-            SLACK_MESSAGE="$SLACK_MESSAGE,$(gen_section "$pr_title" "$owner" "$link_url")"
+            SLACK_MESSAGE="$SLACK_MESSAGE$(gen_section "$pr_title" "$owner" "$link_url")"
             GITHUB_LINKS="$GITHUB_LINKS<li>vidocco/nerdtrivial/pull/$pr_number</li>"
+            CHANGE_COUNT=$(($CHANGE_COUNT+1))
           done
 
           GITHUB_LINKS="$GITHUB_LINKS</ul>"
           AUTHORS=$(echo -e $AUTHORS | sort --unique | sed -z "s/\n/,/g")
-          SLACK_MESSAGE="$SLACK_MESSAGE ]"
+          SLACK_MESSAGE=$(echo $SLACK_MESSAGE | sed 's/.$//')
 
           echo "LINKS=$GITHUB_LINKS" >> "$GITHUB_ENV"
           echo "TARGET_BRANCH=$TARGET_BRANCH" >> "$GITHUB_ENV"
           echo "TITLE=$TITLE" >> "$GITHUB_ENV"
           echo "AUTHORS=$AUTHORS" >> "$GITHUB_ENV"
           echo "SLACK_MESSAGE=$SLACK_MESSAGE" >> "$GITHUB_ENV"
+          echo "CHANGE_COUNT=$CHANGE_COUNT" >> "$GITHUB_ENV"
       - uses: repo-sync/pull-request@v2
+        id: open-release-pr
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           destination_branch: "${{ env.TARGET_BRANCH }}"
@@ -101,6 +78,60 @@ jobs:
 
             ## Checklist <br/>
             - [ ] All backup tasks have been performed.
+      - name: Build Full Slack Message
+        env:
+          SLACK_MESSAGE: ${{env.SLACK_MESSAGE}}
+          CHANGE_COUNT: ${{env.CHANGE_COUNT}}
+          PR_URL: ${{steps.open-release-pr.output.pr_url}}
+        run: |
+          SLACK_MESSAGE_START="\
+            \"blocks\": [\
+              {\
+                \"type\": \"section\",\
+                \"text\": {\
+                  \"type\": \"mrkdwn\",\
+                  \"text\": \"A new backend *$TITLE release* has been created\"\
+                },\
+                \"accessory\": {\
+                  \"type\": \"button\",\
+                  \"text\": {\
+                      \"type\": \"plain_text\",\
+                      \"text\": \"See The Full PR\",\
+                      \"emoji\": true\
+                  },\
+                  \"url\": \"$PR_URL\"\
+                }\
+              },\
+              {\
+                \"type\": \"header\",\
+                \"text\": {\
+                  \"type\": \"plain_text\",\
+                  \"text\": \"Changelist\"\
+                }\
+              },
+              {\
+                  \"type\": \"section\",\
+                  \"fields\": ["
+
+          SLACK_MESSAGE_END="]}]}"
+
+          if [[ $CHANGE_COUNT > 10 ]]; then
+            SLACK_MESSAGE_END="]\
+                },\
+                {\
+                    "type": "context",\
+                    "elements": [\
+                        {\
+                            "type": "mrkdwn",\
+                            "text": ":rocket: and *$(($CHANGE_COUNT-10))* other changes (see PR for full details)."\
+                        }\
+                    ]\
+                }\
+              ]}"
+          fi
+
+          FULL_SLACK_MESSAGE="$SLACK_MESSAGE_START$SLACK_MESSAGE$SLACK_MESSAGE_END"
+          echo "FULL_SLACK_MESSAGE=$FULL_SLACK_MESSAGE" >> "$GITHUB_ENV"
       - name: Notify support-general
         if: ${{ env.TARGET_BRANCH == 'main' }}
         env:
@@ -109,4 +140,4 @@ jobs:
           curl -X POST https://slack.com/api/chat.postMessage \
             -H "Content-type: application/json; charset=utf-8" \
             -H "Authorization: Bearer $SLACK_BOT_TOKEN" \
-            -d '{ "channel": "C9ZH84S3S", ${{env.SLACK_MESSAGE}} }'
+            -d '{ "channel": "C9ZH84S3S", ${{env.FULL_SLACK_MESSAGE}} }'
