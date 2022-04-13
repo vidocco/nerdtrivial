@@ -34,14 +34,16 @@ jobs:
 
           gen_emoji() {
             case $1 in
-              null) echo ":large_blue_circle:"
-              feature) echo ":large_blue_circle:"
-              fix) echo ":large_green_circle:"
-              test) echo ":large_orange_circle:"
-              improvement) echo ":large_purple_circle:"
-              refactor) echo ":black_circle:"
-              dx) echo ":white_circle:"
-              ops) echo ":white_circle:"
+              null) echo ":large_blue_circle:" ;;
+              feature) echo ":large_blue_circle:" ;;
+              fix) echo ":large_green_circle:" ;;
+              test) echo ":large_orange_circle:" ;;
+              improvement) echo ":large_purple_circle:" ;;
+              refactor) echo ":black_circle:" ;;
+              dx) echo ":white_circle:" ;;
+              ops) echo ":white_circle:" ;;
+              *) echo "Unexpected label" >&2 ; exit 1 ;;
+            esac
           }
 
           gen_section() {
