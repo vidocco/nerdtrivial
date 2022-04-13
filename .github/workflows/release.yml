@@ -32,10 +32,22 @@ jobs:
           AUTHORS=""
           SLACK_MESSAGE=""
 
+          gen_emoji() {
+            case $1 in
+              null) echo ":large_blue_circle:"
+              feature) echo ":large_blue_circle:"
+              fix) echo ":large_green_circle:"
+              test) echo ":large_orange_circle:"
+              improvement) echo ":large_purple_circle:"
+              refactor) echo ":black_circle:"
+              dx) echo ":white_circle:"
+              ops) echo ":white_circle:"
+          }
+
           gen_section() {
             echo "{\
               \"type\": \"mrkdwn\",\
-              \"text\": \"<$3| *$1*>\n *Author*: $2\"\
+              \"text\": \"$1 <$3| *$2*>\"\
             },"
           }
 
@@ -48,9 +60,10 @@ jobs:
             res=$(curl $url -H 'Content-Type: application/json' -H 'Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}')
             owner=$(echo $res | jq --raw-output '.user.login')
             pr_title=$(echo $res | jq --raw-output '.title')
+            label=$(echo $res | jq --raw-output '[.labels[] | select(.name == "feature" or .name == "fix" or .name == "test" or .name == "improvement" or .name == "refactor" or .name == "dx" or .name == "ops")] | .[0] | .name' | gen_emoji)
 
             AUTHORS="$AUTHORS$owner\n"
-            SLACK_MESSAGE="$SLACK_MESSAGE$(if [[ $CHANGE_COUNT -lt 10 ]];then echo $(gen_section "$pr_title" "$owner" "$link_url");fi)"
+            SLACK_MESSAGE="$SLACK_MESSAGE$(if [[ $CHANGE_COUNT -lt 10 ]];then echo $(gen_section "$label" "$pr_title" "$link_url");fi)"
             GITHUB_LINKS="$GITHUB_LINKS<li>vidocco/nerdtrivial/pull/$pr_number</li>"
             CHANGE_COUNT=$(($CHANGE_COUNT+1))
           done
@@ -109,12 +122,41 @@ jobs:
                   \"text\": \"Changelist\"\
                 }\
               },\
+              {\
+                \"type\": \"context\",\
+                \"elements\": [\
+                  {\
+                    \"type\": \"mrkdwn\",\
+                    \"text\": \":large_blue_circle: feature/code change\"\
+                  },\
+                  {\
+                    \"type\": \"mrkdwn\",\
+                    \"text\": \":large_green_circle: fix\"\
+                  },\
+                  {\
+                    \"type\": \"mrkdwn\",\
+                    \"text\": \":large_orange_circle: test\"\
+                  },\
+                  {\
+                    \"type\": \"mrkdwn\",\
+                    \"text\": \":large_purple_circle: improvement\"\
+                  },\
+                  {\
+                    \"type\": \"mrkdwn\",\
+                    \"text\": \":black_circle: refactor\"\
+                  },\
+                  {\
+                    \"type\": \"mrkdwn\",\
+                    \"text\": \":white_circle: ops/dx\"\
+                  }\
+                ]\
+              },\
               { \"type\": \"divider\" },\
               {\
                   \"type\": \"section\",\
                   \"fields\": ["
 
-          SLACK_MESSAGE_END="]}]}"
+          SLACK_MESSAGE_END="]}, { \"type\": \"divider\" }]"
 
           if [[ $CHANGE_COUNT > 10 ]]; then
             SLACK_MESSAGE_END="]\
@@ -127,7 +169,8 @@ jobs:
                             \"text\": \":rocket: and *$(($CHANGE_COUNT-10))* other changes (see PR for full details).\"\
                         }\
                     ]\
-                }\
+                },\
+                { \"type\": \"divider\" }\
               ]"
           fi
 
