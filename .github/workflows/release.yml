@@ -62,10 +62,11 @@ jobs:
             res=$(curl $url -H 'Content-Type: application/json' -H 'Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}')
             owner=$(echo $res | jq --raw-output '.user.login')
             pr_title=$(echo $res | jq --raw-output '.title')
-            label=$(echo $res | jq --raw-output '[.labels[] | select(.name == "feature" or .name == "fix" or .name == "test" or .name == "improvement" or .name == "refactor" or .name == "dx" or .name == "ops")] | .[0] | .name' | gen_emoji)
+            label=$(echo $res | jq --raw-output '[.labels[] | select(.name == "feature" or .name == "fix" or .name == "test" or .name == "improvement" or .name == "refactor" or .name == "dx" or .name == "ops")] | .[0] | .name')
+            emoji=$(gen_emoji $label)
 
             AUTHORS="$AUTHORS$owner\n"
-            SLACK_MESSAGE="$SLACK_MESSAGE$(if [[ $CHANGE_COUNT -lt 10 ]];then echo $(gen_section "$label" "$pr_title" "$link_url");fi)"
+            SLACK_MESSAGE="$SLACK_MESSAGE$(if [[ $CHANGE_COUNT -lt 10 ]];then echo $(gen_section "$emoji" "$pr_title" "$link_url");fi)"
             GITHUB_LINKS="$GITHUB_LINKS<li>vidocco/nerdtrivial/pull/$pr_number</li>"
             CHANGE_COUNT=$(($CHANGE_COUNT+1))
           done
