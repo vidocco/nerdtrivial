@@ -80,7 +80,7 @@ jobs:
           echo "AUTHORS=$AUTHORS" >> "$GITHUB_ENV"
           echo "SLACK_MESSAGE=$SLACK_MESSAGE" >> "$GITHUB_ENV"
           echo "CHANGE_COUNT=$CHANGE_COUNT" >> "$GITHUB_ENV"
-      - uses: repo-sync/pull-request@v2
+      - uses: cea2aj/pull-request@84eb0c3478f13651e5649367941b867ca02d7926
         id: open-release-pr
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
