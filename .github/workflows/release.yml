@@ -65,7 +65,7 @@ jobs:
             emoji="$(gen_emoji $label)"
 
             AUTHORS="$AUTHORS${owner:+$owner\n}"
-            SLACK_MESSAGE="$SLACK_MESSAGE$(if [[ $CHANGE_COUNT -lt 10 ]]; then echo "$(gen_section "$emoji" "$pr_title" "$link_url")";fi)"
+            SLACK_MESSAGE="$SLACK_MESSAGE$(if [[ $CHANGE_COUNT -lt 10 ]]; then echo "$(gen_section "$emoji" "$pr_title" "$link_url")";fi)$(if [[ $CHANGE_COUNT -lt 9 ]]; then echo ",";fi)"
             GITHUB_LINKS="$GITHUB_LINKS<li>vidocco/nerdtrivial/pull/$pr_number</li>"
             CHANGE_COUNT=$(($CHANGE_COUNT+1))
           done
@@ -113,9 +113,9 @@ jobs:
                 \"accessory\": {\
                   \"type\": \"button\",\
                   \"text\": {\
-                      \"type\": \"plain_text\",\
-                      \"text\": \"See The Full PR\",\
-                      \"emoji\": true\
+                    \"type\": \"plain_text\",\
+                    \"text\": \"See The Full PR\",\
+                    \"emoji\": true\
                   },\
                   \"url\": \"$PR_URL\"\
                 }\
@@ -158,25 +158,24 @@ jobs:
               },\
               { \"type\": \"divider\" },\
               {\
-                  \"type\": \"section\",\
-                  \"fields\": ["
+                \"type\": \"section\",\
+                \"fields\": ["
 
-          SLACK_MESSAGE_END="]}, { \"type\": \"divider\" }]"
+          SLACK_MESSAGE_END="}, { \"type\": \"divider\" }]"
 
           if [[ $CHANGE_COUNT > 10 ]]; then
-            SLACK_MESSAGE_END="]\
-                },\
-                {\
-                    \"type\": \"context\",\
-                    \"elements\": [\
-                        {\
-                            \"type\": \"mrkdwn\",\
-                            \"text\": \":rocket: and *$(($CHANGE_COUNT-10))* other changes (see PR for full details).\"\
-                        }\
-                    ]\
-                },\
-                { \"type\": \"divider\" }\
-              ]"
+            SLACK_MESSAGE_END="},\
+              {\
+                \"type\": \"context\",\
+                \"elements\": [\
+                  {\
+                    \"type\": \"mrkdwn\",\
+                    \"text\": \":rocket: and *$(($CHANGE_COUNT-10))* other changes (see PR for full details).\"\
+                  }\
+                ]\
+              },\
+              { \"type\": \"divider\" }\
+            ]"
           fi
 
           FULL_SLACK_MESSAGE="$SLACK_MESSAGE_START$SLACK_MESSAGE$SLACK_MESSAGE_END"
