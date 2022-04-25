@@ -34,14 +34,14 @@ jobs:
 
           gen_emoji() {
             case $1 in
-              feature) echo ":large_blue_circle:" ;;
-              fix) echo ":large_green_circle:" ;;
-              test) echo ":large_orange_circle:" ;;
-              improvement) echo ":large_purple_circle:" ;;
-              refactor) echo ":black_circle:" ;;
-              dx) echo ":white_circle:" ;;
-              ops) echo ":white_circle:" ;;
-              *) echo ":large_blue_circle:" ;;
+              feature) echo ":sparkles:" ;;
+              fix) echo ":bug:" ;;
+              experiment) echo ":alembic:" ;;
+              improvement) echo ":art:" ;;
+              refactor) echo ":recycle:" ;;
+              dx) echo ":technologist:" ;;
+              ops) echo ":technologist:" ;;
+              *) echo ":sparkles:" ;;
             esac
           }
 
@@ -59,20 +59,22 @@ jobs:
             url=https://api.github.com/repos/vidocco/nerdtrivial/pulls/$pr_number
             link_url=https://github.com/vidocco/nerdtrivial/pull/$pr_number
             res=$(curl $url -H 'Content-Type: application/json' -H 'Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}')
-            owner=$(echo $res | jq --raw-output '.user.login')
-            pr_title=$(echo $res | jq --raw-output '.title')
-            label=$(echo $res | jq --raw-output '[.labels[] | select(.name == "feature" or .name == "fix" or .name == "test" or .name == "improvement" or .name == "refactor" or .name == "dx" or .name == "ops")] | .[0] | .name')
-            emoji=$(gen_emoji $label)
+            owner="$(echo $res | jq --raw-output '.user.login')"
+            pr_title="$(echo $res | jq --raw-output '.title' | sed 's/\\/\\\\/g' | sed 's/"/\\"/g')"
+            label="$(echo "$res" | jq --raw-output '[.labels[] | select(.name == "feature" or .name == "fix" or .name == "experiment" or .name == "improvement" or .name == "refactor" or .name == "dx" or .name == "ops")] | .[0] | .name')"
+            emoji="$(gen_emoji $label)"
 
-            AUTHORS="$AUTHORS$owner\n"
-            SLACK_MESSAGE="$SLACK_MESSAGE$(if [[ $CHANGE_COUNT -lt 10 ]];then echo $(gen_section "$emoji" "$pr_title" "$link_url");fi)"
+            AUTHORS="$AUTHORS${owner:+$owner\n}"
+            SLACK_MESSAGE="$SLACK_MESSAGE$([[ $CHANGE_COUNT -lt 10 ]] && echo "$(gen_section "$emoji" "$pr_title" "$link_url")")"
             GITHUB_LINKS="$GITHUB_LINKS<li>vidocco/nerdtrivial/pull/$pr_number</li>"
             CHANGE_COUNT=$(($CHANGE_COUNT+1))
           done
 
           GITHUB_LINKS="$GITHUB_LINKS</ul>"
-          AUTHORS=$(echo -e $AUTHORS | sort --unique | sed -z "s/\n/,/g")
-          SLACK_MESSAGE=$(echo $SLACK_MESSAGE | sed 's/.$//')
+          SLACK_MESSAGE="$SLACK_MESSAGE ]"
+
+          AUTHORS=$"(echo -e "$AUTHORS" | sort --unique | sed -z 's/\n/,/g')"
+          AUTHORS="${AUTHORS:1:-1}"
 
           echo "LINKS=$GITHUB_LINKS" >> "$GITHUB_ENV"
           echo "TARGET_BRANCH=$TARGET_BRANCH" >> "$GITHUB_ENV"
@@ -80,6 +82,7 @@ jobs:
           echo "AUTHORS=$AUTHORS" >> "$GITHUB_ENV"
           echo "SLACK_MESSAGE=$SLACK_MESSAGE" >> "$GITHUB_ENV"
           echo "CHANGE_COUNT=$CHANGE_COUNT" >> "$GITHUB_ENV"
+      # SEE THIS: https://github.com/repo-sync/pull-request/issues/84
       - uses: cea2aj/pull-request@84eb0c3478f13651e5649367941b867ca02d7926
         id: open-release-pr
         with:
@@ -129,27 +132,27 @@ jobs:
                 \"elements\": [\
                   {\
                     \"type\": \"mrkdwn\",\
-                    \"text\": \":large_blue_circle: feature/code change\"\
+                    \"text\": \":sparkles: feature\"\
                   },\
                   {\
                     \"type\": \"mrkdwn\",\
-                    \"text\": \":large_green_circle: fix\"\
+                    \"text\": \":bug: fix\"\
                   },\
                   {\
                     \"type\": \"mrkdwn\",\
-                    \"text\": \":large_orange_circle: test\"\
+                    \"text\": \"alembic: experiment\"\
                   },\
                   {\
                     \"type\": \"mrkdwn\",\
-                    \"text\": \":large_purple_circle: improvement\"\
+                    \"text\": \":art: improvement\"\
                   },\
                   {\
                     \"type\": \"mrkdwn\",\
-                    \"text\": \":black_circle: refactor\"\
+                    \"text\": \":recycle: refactor\"\
                   },\
                   {\
                     \"type\": \"mrkdwn\",\
-                    \"text\": \":white_circle: ops/dx\"\
+                    \"text\": \":technologist: ops/dx\"\
                   }\
                 ]\
               },\
