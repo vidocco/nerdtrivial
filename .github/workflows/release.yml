@@ -14,7 +14,7 @@ jobs:
       - name: Set Variables
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: ./.github/workflows/scripts/set_variable.sh
+        run: ./.github/workflows/scripts/set_variables.sh
       # SEE THIS: https://github.com/repo-sync/pull-request/issues/84
       - uses: cea2aj/pull-request@84eb0c3478f13651e5649367941b867ca02d7926
         id: open-release-pr
