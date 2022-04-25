@@ -49,7 +49,7 @@ jobs:
             echo "{\
               \"type\": \"mrkdwn\",\
               \"text\": \"$1 <$3| *$2*>\"\
-            },"
+            }"
           }
 
           CHANGE_COUNT=0
