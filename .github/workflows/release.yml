@@ -65,7 +65,7 @@ jobs:
             emoji="$(gen_emoji $label)"
 
             AUTHORS="$AUTHORS${owner:+$owner\n}"
-            SLACK_MESSAGE="$SLACK_MESSAGE$([[ $CHANGE_COUNT -lt 10 ]] && echo "$(gen_section "$emoji" "$pr_title" "$link_url")")"
+            SLACK_MESSAGE="$SLACK_MESSAGE$(if [[ $CHANGE_COUNT -lt 10 ]]; then echo "$(gen_section "$emoji" "$pr_title" "$link_url")";fi)"
             GITHUB_LINKS="$GITHUB_LINKS<li>vidocco/nerdtrivial/pull/$pr_number</li>"
             CHANGE_COUNT=$(($CHANGE_COUNT+1))
           done
