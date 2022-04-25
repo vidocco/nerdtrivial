@@ -140,7 +140,7 @@ jobs:
                   },\
                   {\
                     \"type\": \"mrkdwn\",\
-                    \"text\": \"alembic: experiment\"\
+                    \"text\": \":alembic: experiment\"\
                   },\
                   {\
                     \"type\": \"mrkdwn\",\
