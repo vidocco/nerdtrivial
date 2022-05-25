@@ -51,6 +51,8 @@ do
   label="$(echo "$res" | jq --raw-output '[.labels[] | select(.name == "feature" or .name == "fix" or .name == "experiment" or .name == "improvement" or .name == "refactor" or .name == "dx" or .name == "ops")] | .[0] | .name')"
   emoji="$(gen_emoji "$label")"
 
+  echo "$label"
+
   AUTHORS="$AUTHORS${owner:+$owner\n}"
   SLACK_MESSAGE="$SLACK_MESSAGE$(if [[ $CHANGE_COUNT -lt 10 ]]; then gen_section "$emoji" "$pr_title" "$link_url";fi)$(if [[ $CHANGE_COUNT -lt 9 ]]; then echo ",";fi)"
   GITHUB_LINKS="$GITHUB_LINKS<li>vidocco/nerdtrivial/pull/$pr_number</li>"

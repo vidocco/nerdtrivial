@@ -113,12 +113,3 @@ jobs:
 
           FULL_SLACK_MESSAGE="$SLACK_MESSAGE_START$SLACK_MESSAGE$SLACK_MESSAGE_END"
           echo "FULL_SLACK_MESSAGE=$FULL_SLACK_MESSAGE" >> "$GITHUB_ENV"
-      - name: Notify support-general
-        if: ${{ env.TARGET_BRANCH == 'main' }}
-        env:
-          SLACK_BOT_TOKEN: ${{secrets.SLACK_BOT_TOKEN}}
-        run: |
-          curl -X POST https://slack.com/api/chat.postMessage \
-            -H "Content-type: application/json; charset=utf-8" \
-            -H "Authorization: Bearer $SLACK_BOT_TOKEN" \
-            -d '{ "channel": "C9ZH84S3S", ${{env.FULL_SLACK_MESSAGE}} }'
