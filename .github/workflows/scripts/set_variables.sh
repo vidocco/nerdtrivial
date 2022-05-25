@@ -48,7 +48,7 @@ do
   res=$(curl "$url" -H 'Content-Type: application/json' -H "Authorization: Bearer $GITHUB_TOKEN")
   owner="$(echo "$res" | jq --raw-output '.user.login')"
   pr_title="$(echo "$res" | jq --raw-output '.title' | sed 's/\\/\\\\/g' | sed 's/"/\\"/g')"
-  label="$(echo "$res" | jq --raw-output '[.labels[] | select(.name == "feature" or .name == "fix" or .name == "experiment" or .name == "improvement" or .name == "refactor" or .name == "dx" or .name == "ops")] | .[0] | .name')"
+  label="$(echo "$res" | jq --raw-output '[.labels[]] | .[0] | .name')"
   emoji="$(gen_emoji "$label")"
 
   echo "$label"
