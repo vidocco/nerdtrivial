@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 echo "DATE=$(date +'%Y/%m/%d')" >> "$GITHUB_ENV"
-echo "BRANCH_DATE=$(date + '%Y-%m-%d')" >> "$GITHUB_ENV"
+echo "BRANCH_DATE=$(date +'%Y-%m-%d')" >> "$GITHUB_ENV"
 TARGET_BRANCH=""
 TITLE=""
 
