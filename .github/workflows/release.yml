@@ -16,7 +16,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: ./.github/workflows/scripts/set_variables.sh
       - name: Create & Push Release Branch
-        run:
+        run: |
           git checkout -b release/${{ env.TARGET_BRANCH }}-${{ env.DATE }}
           git config user.name "GitHub Actions"
           git config user.email noreply@github.com
