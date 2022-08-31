@@ -8,42 +8,115 @@ jobs:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - name: Set Variables
-        run: |
-          echo "DATE=$(date +'%Y/%m/%d')" >> "$GITHUB_ENV"
-          TARGET_BRANCH=""
-          TITLE=""
-
-          BRANCH=$(echo $GITHUB_REF | cut -d'/' -f 3)
-          if [[ $BRANCH == "staging" ]]; then
-            TARGET_BRANCH=main
-            TITLE=Production
-          else
-            print "Unexpected source branch for release"
-            exit 0
-          fi
-
-          PRS=$(git --no-pager log $BRANCH..$TARGET_BRANCH --no-walk --tags --pretty=format:"%d%n" | grep -o "v[0-9]\+" | grep -o "[0-9]\+")
-
-          GITHUB_LINKS=""
-
-          for pr_number in $PRS
-          do
-            GITHUB_LINKS="$GITHUB_LINKS- https://github.com/vidocco/nerdtrivial/pull/$pr_number\n"
-          done
-
-          echo "LINKS=$GITHUB_LINKS" >> "$GITHUB_ENV"
-          echo "TARGET_BRANCH=$TARGET_BRANCH" >> "$GITHUB_ENV"
-          echo "TITLE=$TITLE" >> "$GITHUB_ENV"
-      - uses: repo-sync/pull-request@v2
+      - uses: actions/checkout@v3
         with:
+          fetch-depth: 0
+      - name: Set Variables
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: ./.github/workflows/scripts/set_variables.sh
+      - name: Create & Push Release Branch
+        run: |
+          git checkout -b release/${{ env.TARGET_BRANCH }}-${{ env.BRANCH_DATE }}
+          git config user.name "GitHub Actions"
+          git config user.email noreply@github.com
+          git push origin release/${{ env.TARGET_BRANCH }}-${{ env.BRANCH_DATE }}
+      # SEE THIS: https://github.com/repo-sync/pull-request/issues/84
+      - uses: cea2aj/pull-request@84eb0c3478f13651e5649367941b867ca02d7926
+        id: open-release-pr
+        with:
+          source_branch: "release/${{ env.TARGET_BRANCH }}-${{ env.BRANCH_DATE }}"
           github_token: ${{ secrets.GITHUB_TOKEN }}
           destination_branch: "${{ env.TARGET_BRANCH }}"
           pr_title: "${{ env.TITLE }} Release - ${{env.DATE}}"
+          pr_reviewer: "${{ env.AUTHORS }}"
           pr_body: |
-            "## Changelist<br/>\
-            \${{ env.LINKS }}\
-            \## Checklist<br/>\
-            \- [ ] All backup tasks have been performed\
-            \- [ ] I've assigned as reviewers all devs that have their changes included in this PR"
+            ## Changelist <br/>
+            ${{ env.LINKS }}
+
+            ## Checklist <br/>
+            - [ ] All backup tasks have been performed.
+#      - name: Build Full Slack Message
+#        env:
+#          SLACK_MESSAGE: ${{env.SLACK_MESSAGE}}
+#          CHANGE_COUNT: ${{env.CHANGE_COUNT}}
+#          PR_URL: ${{steps.open-release-pr.outputs.pr_url}}
+#        run: |
+#          SLACK_MESSAGE_START="\
+#            \"blocks\": [\
+#              {\
+#                \"type\": \"section\",\
+#                \"text\": {\
+#                  \"type\": \"mrkdwn\",\
+#                  \"text\": \"A new backend *$TITLE release* has been created\"\
+#                },\
+#                \"accessory\": {\
+#                  \"type\": \"button\",\
+#                  \"text\": {\
+#                    \"type\": \"plain_text\",\
+#                    \"text\": \"See The Full PR\",\
+#                    \"emoji\": true\
+#                  },\
+#                  \"url\": \"$PR_URL\"\
+#                }\
+#              },\
+#              {\
+#                \"type\": \"header\",\
+#                \"text\": {\
+#                  \"type\": \"plain_text\",\
+#                  \"text\": \"Changelist\"\
+#                }\
+#              },\
+#              {\
+#                \"type\": \"context\",\
+#                \"elements\": [\
+#                  {\
+#                    \"type\": \"mrkdwn\",\
+#                    \"text\": \":sparkles: feature\"\
+#                  },\
+#                  {\
+#                    \"type\": \"mrkdwn\",\
+#                    \"text\": \":bug: fix\"\
+#                  },\
+#                  {\
+#                    \"type\": \"mrkdwn\",\
+#                    \"text\": \":alembic: experiment\"\
+#                  },\
+#                  {\
+#                    \"type\": \"mrkdwn\",\
+#                    \"text\": \":art: improvement\"\
+#                  },\
+#                  {\
+#                    \"type\": \"mrkdwn\",\
+#                    \"text\": \":recycle: refactor\"\
+#                  },\
+#                  {\
+#                    \"type\": \"mrkdwn\",\
+#                    \"text\": \":technologist: ops/dx\"\
+#                  }\
+#                ]\
+#              },\
+#              { \"type\": \"divider\" },\
+#              {\
+#                \"type\": \"section\",\
+#                \"fields\": ["
+#
+#          SLACK_MESSAGE_END="}, { \"type\": \"divider\" }]"
+#
+#          if [[ $CHANGE_COUNT > 10 ]]; then
+#            SLACK_MESSAGE_END="},\
+#              {\
+#                \"type\": \"context\",\
+#                \"elements\": [\
+#                  {\
+#                    \"type\": \"mrkdwn\",\
+#                    \"text\": \":rocket: and *$(($CHANGE_COUNT-10))* other changes (see PR for full details).\"\
+#                  }\
+#                ]\
+#              },\
+#              { \"type\": \"divider\" }\
+#            ]"
+#          fi
+#
+#          FULL_SLACK_MESSAGE="$SLACK_MESSAGE_START$SLACK_MESSAGE$SLACK_MESSAGE_END"
+#          echo "FULL_SLACK_MESSAGE=$FULL_SLACK_MESSAGE" >> "$GITHUB_ENV"
